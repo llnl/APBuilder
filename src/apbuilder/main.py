@@ -731,8 +731,23 @@ def mp_get_atm_1d(
         out_file_prefix=out_file_prefix,
     )
     logger.info("Processing atmospheric r_wind done")
-    return (dspd1, dden1, dv1, du1, dr1)
-
+    #A new flag needs to be defined
+    GeometricHeights = 1
+    if GeometricHeights == 1:
+        logger.info("Processing geometric height conversion")
+        dspd2 =  apbuilder.utils.atm_geometric_height(dspd1)
+        dden2 =  apbuilder.utils.atm_geometric_height(dden1)
+        dv2 =  apbuilder.utils.atm_geometric_height(dv1)
+        du2 =  apbuilder.utils.atm_geometric_height(du1)
+        dr2 =  apbuilder.utils.atm_geometric_height(dr1)
+        logger.info("Processing geometric height conversion done")
+    else:
+        dspd2 = dspd1
+        dden2 = dden1
+        dv2 = dv1
+        du2 = du1
+        dr2 = dr1
+    return (dspd2, dden2, dv2, du2, dr2)
 
 def mp_get_atm_2d(
     du: xarray.Dataset,
@@ -1062,7 +1077,7 @@ def run_apb_with_args(user_args) -> int:
 
     if args.subcommand == "build1d":
         try:
-            atm0 = extract(
+            atm = extract(
                 args.datetime,
                 args.weather_model,
                 "1D",
@@ -1123,7 +1138,7 @@ def run_apb_with_args(user_args) -> int:
             out_file_prefix=args.prefix_output_file,
         )
     elif args.subcommand == "build2d":
-        atm0 = extract(
+        atm = extract(
             args.datetime,
             args.weather_model,
             "2D",
@@ -1142,16 +1157,6 @@ def run_apb_with_args(user_args) -> int:
             out_file_prefix=args.prefix_output_file,
         )
         # transform(args.lat, args.lon, netcdf_file)
-        #A new flag needs to be defined
-        GeometricHeights = 1
-        if GeometricHeights == 1:
-            atm = [apbuilder.utils.atm_geometric_height(atm0[0]),
-                   apbuilder.utils.atm_geometric_height(atm0[1]),
-                   apbuilder.utils.atm_geometric_height(atm0[2]),
-                   apbuilder.utils.atm_geometric_height(atm0[3]),
-                   apbuilder.utils.atm_geometric_height(atm0[4])]
-        else:
-            atm = atm0
         try:
             apbuilder.profile_2d.writebin_ac2dr(
                 atm[0],
