@@ -821,14 +821,30 @@ def mp_get_atm_2d(
     )
     logger.info("Processing atmospheric r_wind done")
 
+    #A new flag needs to be defined
+    GeometricHeights = 1
+    if GeometricHeights == 1:
+        logger.info("Processing geometric height conversion")
+        dspd_tmp =  apbuilder.utils.atm_geometric_height(dspd0)
+        dden_tmp =  apbuilder.utils.atm_geometric_height(dden0)
+        dv_tmp =  apbuilder.utils.atm_geometric_height(dv0)
+        du_tmp =  apbuilder.utils.atm_geometric_height(du0)
+        dr_tmp =  apbuilder.utils.atm_geometric_height(dr0)
+        logger.info("Processing geometric height conversion done")
+    else:
+        dspd_tmp = dspd0
+        dden_tmp = dden0
+        dv_tmp = dv0
+        du_tmp = du0
+        dr_tmp = dr0
     # Interpolations can also be done in parallel
     logger.info("Processing interpolations")
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        future_dspd1 = executor.submit(apbuilder.profile_2d.atm_interp, dspd0, dr, dh)
-        future_dden1 = executor.submit(apbuilder.profile_2d.atm_interp, dden0, dr, dh)
-        future_dv1 = executor.submit(apbuilder.profile_2d.atm_interp, dv0, dr, dh)
-        future_du1 = executor.submit(apbuilder.profile_2d.atm_interp, du0, dr, dh)
-        future_dr1 = executor.submit(apbuilder.profile_2d.atm_interp, dr0, dr, dh)
+        future_dspd1 = executor.submit(apbuilder.profile_2d.atm_interp, dspd_tmp, dr, dh)
+        future_dden1 = executor.submit(apbuilder.profile_2d.atm_interp, dden_tmp, dr, dh)
+        future_dv1 = executor.submit(apbuilder.profile_2d.atm_interp, dv_tmp, dr, dh)
+        future_du1 = executor.submit(apbuilder.profile_2d.atm_interp, du_tmp, dr, dh)
+        future_dr1 = executor.submit(apbuilder.profile_2d.atm_interp, dr_tmp, dr, dh)
 
         dspd1 = future_dspd1.result()
         logger.info("Processing atmospheric speed interpolation done")
@@ -1046,7 +1062,7 @@ def run_apb_with_args(user_args) -> int:
 
     if args.subcommand == "build1d":
         try:
-            atm = extract(
+            atm0 = extract(
                 args.datetime,
                 args.weather_model,
                 "1D",
@@ -1107,7 +1123,7 @@ def run_apb_with_args(user_args) -> int:
             out_file_prefix=args.prefix_output_file,
         )
     elif args.subcommand == "build2d":
-        atm = extract(
+        atm0 = extract(
             args.datetime,
             args.weather_model,
             "2D",
@@ -1126,6 +1142,16 @@ def run_apb_with_args(user_args) -> int:
             out_file_prefix=args.prefix_output_file,
         )
         # transform(args.lat, args.lon, netcdf_file)
+        #A new flag needs to be defined
+        GeometricHeights = 1
+        if GeometricHeights == 1:
+            atm = [apbuilder.utils.atm_geometric_height(atm0[0]),
+                   apbuilder.utils.atm_geometric_height(atm0[1]),
+                   apbuilder.utils.atm_geometric_height(atm0[2]),
+                   apbuilder.utils.atm_geometric_height(atm0[3]),
+                   apbuilder.utils.atm_geometric_height(atm0[4])]
+        else:
+            atm = atm0
         try:
             apbuilder.profile_2d.writebin_ac2dr(
                 atm[0],
