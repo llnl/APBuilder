@@ -181,6 +181,13 @@ def parse_args(args) -> argparse.Namespace:
         default=apbuilder.utils.Cycle.MODEL,
     )
     parent_parser.add_argument(
+        "-gh", 
+        "--geometric-heights",
+        action="store_true",
+        default=True,
+        help="convert geopotential heights to geometric heights",
+    )
+    parent_parser.add_argument(
         "-lf",
         "--local-filename",
         help="name of the local file to read instead of downloading from remote server",
@@ -630,12 +637,13 @@ def get_atm(
     dlim=[0, 0],
     wlim=[0, 0],
     out_file_prefix="",
+    geometric_heights=True,
 ):
     sp1 = convert_sp_to_sp360(sp1)
     sp2 = convert_sp_to_sp360(sp2)
     if profile_format == "1D":
         dspd1, dden1, dv1, du1, dr1 = mp_get_atm_1d(
-            du, dv, dgh, dtmp, sp1, sp2, save_dir, clim, dlim, wlim, out_file_prefix
+            du, dv, dgh, dtmp, sp1, sp2, save_dir, clim, dlim, wlim, out_file_prefix, geometric_heights
         )
     else:
         dspd1, dden1, dv1, du1, dr1 = mp_get_atm_2d(
@@ -652,6 +660,7 @@ def get_atm(
             dlim,
             wlim,
             out_file_prefix,
+            geometric_heights,
         )
     return (dspd1, dden1, dv1, du1, dr1)
 
@@ -668,6 +677,7 @@ def mp_get_atm_1d(
     dlim=[0, 0],
     wlim=[0, 0],
     out_file_prefix="",
+    geometric_heights=True,
 ):
     logger.info("Processing 1D atmospheric speed, density, v_wind, and u_wind")
     with concurrent.futures.ProcessPoolExecutor() as executor:
@@ -731,23 +741,29 @@ def mp_get_atm_1d(
         out_file_prefix=out_file_prefix,
     )
     logger.info("Processing atmospheric r_wind done")
-    #A new flag needs to be defined
-    GeometricHeights = 1
-    if GeometricHeights == 1:
-        logger.info("Processing geometric height conversion")
-        dspd2 =  apbuilder.utils.atm_geometric_height(dspd1)
-        dden2 =  apbuilder.utils.atm_geometric_height(dden1)
-        dv2 =  apbuilder.utils.atm_geometric_height(dv1)
-        du2 =  apbuilder.utils.atm_geometric_height(du1)
-        dr2 =  apbuilder.utils.atm_geometric_height(dr1)
-        logger.info("Processing geometric height conversion done")
-    else:
-        dspd2 = dspd1
-        dden2 = dden1
-        dv2 = dv1
-        du2 = du1
-        dr2 = dr1
+
+    if geometric_heights:
+        return convert_to_geometric_heights(dspd1, dden1, dv1, du1, dr1)
+
+    return (dspd1, dden1, dv1, du1, dr1)
+
+
+def convert_to_geometric_heights(
+    dspd1: xarray.DataArray,
+    dden1: xarray.DataArray,
+    dv1: xarray.DataArray,
+    du1: xarray.DataArray,
+    dr1: xarray.DataArray,
+):
+    logger.info("Processing geometric height conversion")
+    dspd2 = apbuilder.utils.atm_geometric_height(dspd1)
+    dden2 = apbuilder.utils.atm_geometric_height(dden1)
+    dv2 = apbuilder.utils.atm_geometric_height(dv1)
+    du2 = apbuilder.utils.atm_geometric_height(du1)
+    dr2 = apbuilder.utils.atm_geometric_height(dr1)
+    logger.info("Processing geometric height conversion done")
     return (dspd2, dden2, dv2, du2, dr2)
+
 
 def mp_get_atm_2d(
     du: xarray.Dataset,
@@ -763,6 +779,7 @@ def mp_get_atm_2d(
     dlim=[0, 0],
     wlim=[0, 0],
     out_file_prefix="",
+    geometric_heights: bool = True,
 ):
     logger.info("Processing 2D atmospheric speed, density, v_wind, and u_wind")
 
@@ -836,16 +853,8 @@ def mp_get_atm_2d(
     )
     logger.info("Processing atmospheric r_wind done")
 
-    #A new flag needs to be defined
-    GeometricHeights = 1
-    if GeometricHeights == 1:
-        logger.info("Processing geometric height conversion")
-        dspd_tmp =  apbuilder.utils.atm_geometric_height(dspd0)
-        dden_tmp =  apbuilder.utils.atm_geometric_height(dden0)
-        dv_tmp =  apbuilder.utils.atm_geometric_height(dv0)
-        du_tmp =  apbuilder.utils.atm_geometric_height(du0)
-        dr_tmp =  apbuilder.utils.atm_geometric_height(dr0)
-        logger.info("Processing geometric height conversion done")
+    if geometric_heights:
+        dspd_tmp, dden_tmp, dv_tmp, du_tmp, dr_tmp = convert_to_geometric_heights(dspd0, dden0, dv0, du0, dr0)
     else:
         dspd_tmp = dspd0
         dden_tmp = dden0
@@ -891,6 +900,7 @@ def extract(
     dlim=[0, 0],
     wlim=[0, 0],
     out_file_prefix="",
+    geometric_heights: bool = True,
 ) -> str:
     """
     Downloads the grib data and saves it in NetCDF4 format.
@@ -1011,6 +1021,7 @@ def extract(
         dlim=dlim,
         wlim=wlim,
         out_file_prefix=out_file_prefix,
+        geometric_heights=geometric_heights,
     )
 
     return [dspd1, dden1, dv1, du1, dr1]
@@ -1092,6 +1103,7 @@ def run_apb_with_args(user_args) -> int:
                 dlim=args.dlim,
                 wlim=args.wlim,
                 out_file_prefix=args.prefix_output_file,
+                geometric_heights=args.geometric_heights,
             )
         except requests.exceptions.SSLError as e:
             logger.error(
@@ -1155,6 +1167,7 @@ def run_apb_with_args(user_args) -> int:
             dlim=args.dlim,
             wlim=args.wlim,
             out_file_prefix=args.prefix_output_file,
+            geometric_heights=args.geometric_heights,
         )
         # transform(args.lat, args.lon, netcdf_file)
         try:
