@@ -270,3 +270,103 @@ def test_gfs_noaa_localfile_2014_01_03_2D_plot_limits(tmp_path):
         assert (
             bbox == None
         ), f"actual image {actual_filename} is different than expected image {expected_filename}"
+
+def test_gfs_noaa_localfile_2025_12_12_1D(tmp_path):
+    # apbuilder build1d 20251212 42.6053 87.9573 53.9487 84.8189
+    test_name = "2025_12_12_gfs_noaa_localfile_1d"
+    datetime_ = "20251212"
+    lat = "42.6053"
+    lon = "87.9573"
+    lat2 = "53.9487"
+    lon2 = "84.8189"
+    weather_model = "GFS"
+    out_dir = os.path.join(OUTPUT_DIRECTORY, tmp_path, "sub_folder", "tmp")
+    expected_dir = os.path.join(EXPECTED_DIRECTORY, test_name)
+    local_filename = os.path.join(
+        DATA_DIRECTORY, weather_model.lower(), datetime_, "gfs.t00z.pgrb2.0p25.f000"
+    )
+    args = [
+        "build1d",
+        datetime_,
+        lat,
+        lon,
+        lat2,
+        lon2,
+        "-out",
+        out_dir,
+        "-wm",
+        weather_model,
+        "-lf",
+        local_filename,
+    ]
+    main.run_apb_with_args(args)
+
+    files = [file for file in os.listdir(expected_dir) if file.endswith(".png")]
+    for file in files:
+        # assign images
+        expected_filename = os.path.join(EXPECTED_DIRECTORY, test_name, file)
+        actual_filename = os.path.join(out_dir, file)
+        expected_image = Image.open(expected_filename)
+        actual_image = Image.open(actual_filename)
+
+        # finding difference
+        diff = ImageChops.difference(expected_image, actual_image)
+        bbox = diff.getbbox(alpha_only=False)
+        if bbox != None:
+            diff.show()
+
+        # assert images are the same
+        assert (
+            bbox == None
+        ), f"actual image {actual_filename} is different than expected image {expected_filename}"
+
+def test_gfs_noaa_localfile_2025_12_12_2D(tmp_path):
+    # apbuilder build2d 20251212 42.6053 87.9573 53.9487 84.8189 0.5
+    test_name = "2025_12_12_gfs_noaa_localfile_2d"
+    datetime_ = "20251212"
+    lat = "42.6053"
+    lon = "87.9573"
+    lat2 = "53.9487"
+    lon2 = "84.8189"
+    hr = "0.5"
+    weather_model = "GFS"
+    out_dir = os.path.join(OUTPUT_DIRECTORY, tmp_path)
+    expected_dir = os.path.join(EXPECTED_DIRECTORY, test_name)
+    local_filename = os.path.join(
+        DATA_DIRECTORY, weather_model.lower(), datetime_, "gfs.t00z.pgrb2.0p25.f000"
+    )
+    args = [
+        "build2d",
+        datetime_,
+        lat,
+        lon,
+        lat2,
+        lon2,
+        hr,
+        "-out",
+        out_dir,
+        "-wm",
+        weather_model,
+        "-lf",
+        local_filename,
+    ]
+    main.run_apb_with_args(args)
+
+    files = [file for file in os.listdir(expected_dir) if file.endswith(".png")]
+    for file in files:
+        # assign images
+        expected_filename = os.path.join(EXPECTED_DIRECTORY, test_name, file)
+        actual_filename = os.path.join(out_dir, file)
+        expected_image = Image.open(expected_filename)
+        actual_image = Image.open(actual_filename)
+
+        # finding difference
+        diff = ImageChops.difference(expected_image, actual_image)
+        bbox = diff.getbbox(alpha_only=True)
+        if bbox != None:
+            diff.show()
+
+        # assert images are the same
+        assert (
+            bbox == None
+        ), f"actual image {actual_filename} is different than expected image {expected_filename}"

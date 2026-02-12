@@ -15,7 +15,6 @@ from apbuilder.exceptions import HorizontalResolutionError
 
 logger = logging.getLogger(__name__)
 
-
 def atm_interp(da, dr1, dh1):
     orig_dr = abs(da.coords["distance"].values[1] - da.coords["distance"].values[0])
     if dr1 == 0:
@@ -23,7 +22,7 @@ def atm_interp(da, dr1, dh1):
     else:
         dr2 = dr1
     oldh = da.coords["height"].values
-    newh = np.arange(min(oldh), max(oldh), dh1)
+    newh = np.arange(0, max(oldh), dh1)
     oldd = da.coords["distance"].values
     if dr2 > (max(oldd) - min(oldd)):
         logger.warn(

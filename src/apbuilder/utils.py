@@ -218,3 +218,13 @@ def get_azimuth(sp1, sp2):
         )
     )
     return theta
+
+def atm_geometric_height(da):
+    earthR=6356.75*1000
+    da2 = da
+    hgt0 = da.coords["height"].values
+    hgt2 = hgt0*earthR/(earthR - hgt0)
+    da2 = da2.assign_coords(height=hgt2)
+    return da2
+
+
