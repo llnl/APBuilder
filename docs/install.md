@@ -17,14 +17,14 @@ There are 2 ways to install the application.
 Create mamba virtual environment
 
 ````bash
-mamba create -y --name apbuilder python=3.11
+mamba create -y --name apbuilder python=3.13
 mamba activate apbuilder
 ````
 
 Before installing the tool, `PyGMT` must be install in the system.
 
 ````bash
-mamba install -y -c conda-forge 'pygmt=0.17' libgdal-grib libgdal-netcdf
+mamba install -y -c conda-forge 'pygmt=0.18' libgdal-grib libgdal-netcdf
 ````
 
 ### Installation

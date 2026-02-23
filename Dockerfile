@@ -2,7 +2,7 @@ ARG BASE_REGISTRY=ghcr.io
 ARG BASE_IMAGE=llnl/apbuilder/ironbank/redhat/ubi8
 ARG BASE_TAG=8.10
 ARG PYTHON_VERSION=3.12
-ARG MICROMAMBA_VERSION=2.3.3-0
+ARG MICROMAMBA_VERSION=2.5.0-2
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} AS builder
 # re-declare and auto inherit the value set earlier for PYTHON_VERSION
@@ -13,6 +13,8 @@ COPY pyproject.toml .
 COPY src ./src
 COPY .git ./.git
 COPY dist ./dist
+COPY LICENSE ./LICENSE
+COPY README.md ./README.md
 
 RUN if [ -z "$(ls dist/*.whl 2>/dev/null)" ]; then \
     yum -y install git python${PYTHON_VERSION} python${PYTHON_VERSION}-pip && \
@@ -43,7 +45,7 @@ ENV VENV_NAME=apbuilder-venv
 # Create environment with dependencies
 RUN echo ${VENV_NAME}
 RUN micromamba create -y -n ${VENV_NAME} python=${PYTHON_VERSION} \ 
-    'pygmt=0.17' \
+    'pygmt=0.18' \
     'libgdal-grib' \
     'libgdal-netcdf' \
     -c conda-forge && \
