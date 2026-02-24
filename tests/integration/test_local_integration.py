@@ -280,6 +280,7 @@ def test_gfs_noaa_localfile_2025_12_12_1D(tmp_path):
     lat2 = "53.9487"
     lon2 = "84.8189"
     weather_model = "GFS"
+    vertical_coordinate = "geopotential"
     out_dir = os.path.join(OUTPUT_DIRECTORY, tmp_path, "sub_folder", "tmp")
     expected_dir = os.path.join(EXPECTED_DIRECTORY, test_name)
     local_filename = os.path.join(
@@ -298,6 +299,8 @@ def test_gfs_noaa_localfile_2025_12_12_1D(tmp_path):
         weather_model,
         "-lf",
         local_filename,
+        "-vc",
+        vertical_coordinate,
     ]
     main.run_apb_with_args(args)
 
@@ -330,6 +333,7 @@ def test_gfs_noaa_localfile_2025_12_12_2D(tmp_path):
     lon2 = "84.8189"
     hr = "0.5"
     weather_model = "GFS"
+    vertical_coordinate = "geometric"
     out_dir = os.path.join(OUTPUT_DIRECTORY, tmp_path)
     expected_dir = os.path.join(EXPECTED_DIRECTORY, test_name)
     local_filename = os.path.join(
@@ -349,6 +353,8 @@ def test_gfs_noaa_localfile_2025_12_12_2D(tmp_path):
         weather_model,
         "-lf",
         local_filename,
+        "-vc",
+        vertical_coordinate,
     ]
     main.run_apb_with_args(args)
 

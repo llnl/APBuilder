@@ -20,6 +20,10 @@ class Cycle(StrEnum):
     FORECAST = "forecast"
     FORECAST_ONLY = "forecast-only"
 
+class Height(StrEnum):
+    GEOMETRIC = "geometric"
+    GEOPOTENTIAL = "geopotential"
+
 
 @staticmethod
 def convert_datetime_to_str_for_filename(data: np.datetime64) -> str:
