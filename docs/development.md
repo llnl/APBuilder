@@ -4,7 +4,7 @@ Install all pre-requisites as defined in the [home page](install.md#pre-requisit
 
 ## Software Development
 
-Using `git`, clone the repo.
+Using `git`, clone the [repo](https://github.com/llnl/APBuilder).
 
 Install the Python application locally, including all development and testing dependencies,
 using the following command:

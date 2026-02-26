@@ -49,6 +49,6 @@ plugins:
     
 extra:
   doc_number: LLNL-CODE-2012226
-  doc_last_updated: October 13, 2025
-  software_version: 1.0.0
+  doc_last_updated: February 26, 2026
+  software_version: 1.1.0
   doi: https://doi.org/10.11578/dc.20251009.4

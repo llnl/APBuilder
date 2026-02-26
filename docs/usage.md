@@ -50,9 +50,9 @@ LLNL
 ```bash
 $ apbuilder build1d --help
 usage: apbuilder build1d [-h] [-wm {GFS,HRRR,IFS,RAP,ERA5}] [-e] [-nd]
-                         [-c {model,forecast,forecast-only}] [-lf filename] [-out out_dir]
-                         [-data data_dir] [-pof prefix] [-clim min max] [-dlim min max]
-                         [-wlim min max]
+                         [-c {model,forecast,forecast-only}] [-vc {geometric,geopotential}]
+                         [-lf filename] [-out out_dir] [-data data_dir] [-pof prefix]
+                         [-clim min max] [-dlim min max] [-wlim min max]
                          datetime [-90, 90] [-180, 360] [-90, 90] [-180, 360]
 
 positional arguments:
@@ -64,22 +64,24 @@ positional arguments:
 
 options:
   -h, --help            show this help message and exit
-  -wm {GFS,HRRR,IFS,RAP,ERA5}, --weather-model {GFS,HRRR,IFS,RAP,ERA5}
+  -wm, --weather-model {GFS,HRRR,IFS,RAP,ERA5}
                         weather model (default: GFS)
   -e, --epoch           specify if datetime is in epoch format (default: False)
   -nd, --no-download    test out the parameters without downloading data (default: False)
-  -c {model,forecast,forecast-only}, --cycle {model,forecast,forecast-only}
+  -c, --cycle {model,forecast,forecast-only}
                         the model or forecast cycle type to download the data (default: model)
-  -lf filename, --local-filename filename
+  -vc, --vertical-coordinate {geometric,geopotential}
+                        convert height based on the vertical coordinate (default: geometric)
+  -lf, --local-filename filename
                         name of the local file to read instead of downloading from remote server
                         (default: None)
-  -out out_dir, --output-directory out_dir
+  -out, --output-directory out_dir
                         specify full path directory to save output files (default:
                         C:\Users\myuser\apbuilder\output)
-  -data data_dir, --data-directory data_dir
+  -data, --data-directory data_dir
                         specify full path directory to save the weather models data files (default:
                         C:\Users\myuser\apbuilder\data)
-  -pof prefix, --prefix-output-file prefix
+  -pof, --prefix-output-file prefix
                         Prefix for the output binary files (default: None)
   -clim min max         min and max values for sound speed profile plots (default: [0, 0])
   -dlim min max         min and max values for density profile plots (default: [0, 0])
@@ -89,10 +91,10 @@ options:
 ```bash
 $ apbuilder build2d --help
 usage: apbuilder build2d [-h] [-wm {GFS,HRRR,IFS,RAP,ERA5}] [-e] [-nd]
-                         [-c {model,forecast,forecast-only}] [-lf filename] [-out out_dir]
-                         [-data data_dir] [-pof prefix] [-clim min max] [-dlim min max]
-                         [-wlim min max]
-                         datetime [-90, 90] [-180, 360] [-90, 90] [-180, 360] [[0, 360]] [[0,]]
+                         [-c {model,forecast,forecast-only}] [-vc {geometric,geopotential}]
+                         [-lf filename] [-out out_dir] [-data data_dir] [-pof prefix]
+                         [-clim min max] [-dlim min max] [-wlim min max]
+                         datetime [-90, 90] [-180, 360] [-90, 90] [-180, 360] [[0, 360]] [[0, ]]
 
 positional arguments:
   datetime              date of data in ISO 8601 or epoch format
@@ -105,22 +107,24 @@ positional arguments:
 
 options:
   -h, --help            show this help message and exit
-  -wm {GFS,HRRR,IFS,RAP,ERA5}, --weather-model {GFS,HRRR,IFS,RAP,ERA5}
+  -wm, --weather-model {GFS,HRRR,IFS,RAP,ERA5}
                         weather model (default: GFS)
   -e, --epoch           specify if datetime is in epoch format (default: False)
   -nd, --no-download    test out the parameters without downloading data (default: False)
-  -c {model,forecast,forecast-only}, --cycle {model,forecast,forecast-only}
+  -c, --cycle {model,forecast,forecast-only}
                         the model or forecast cycle type to download the data (default: model)
-  -lf filename, --local-filename filename
+  -vc, --vertical-coordinate {geometric,geopotential}
+                        convert height based on the vertical coordinate (default: geometric)
+  -lf, --local-filename filename
                         name of the local file to read instead of downloading from remote server
                         (default: None)
-  -out out_dir, --output-directory out_dir
+  -out, --output-directory out_dir
                         specify full path directory to save output files (default:
                         C:\Users\myuser\apbuilder\output)
-  -data data_dir, --data-directory data_dir
+  -data, --data-directory data_dir
                         specify full path directory to save the weather models data files (default:
                         C:\Users\myuser\apbuilder\data)
-  -pof prefix, --prefix-output-file prefix
+  -pof, --prefix-output-file prefix
                         Prefix for the output binary files (default: None)
   -clim min max         min and max values for sound speed profile plots (default: [0, 0])
   -dlim min max         min and max values for density profile plots (default: [0, 0])
@@ -133,7 +137,7 @@ usage: apbuilder info [-h] [-sb COLUMN_NAME] [-ro] (-mi | -gmt | -sc)
 
 options:
   -h, --help            show this help message and exit
-  -sb COLUMN_NAME, --sort-by COLUMN_NAME
+  -sb, --sort-by COLUMN_NAME
                         column name to sort the available weather models table. Allowed values:
                         {Model, Grid (Deg), Time Period, Model Cycle, Forecast Cycle, Geographic
                         Extent} (default: Model)

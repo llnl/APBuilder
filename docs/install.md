@@ -29,7 +29,10 @@ mamba install -y -c conda-forge 'pygmt=0.18' libgdal-grib libgdal-netcdf
 
 ### Installation
 
-Install the Python application, including all dependencies, using the following command:
+Install the Python application from [PyPi](https://pypi.org/project/apbuilder/),
+including all other dependencies, using the following command:
+
+**NOTE**: Make sure you installed the [pre-requisites](#pre-requisites).
 
 ````bash
 pip install apbuilder
