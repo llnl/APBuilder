@@ -1,6 +1,6 @@
 services:
   apbuilder: 
-    image: ghcr.io/llnl/apbuilder:1.0.0
+    image: ghcr.io/llnl/apbuilder:1.1.0
     restart: "no"
     volumes:
       - type: bind
